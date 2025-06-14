@@ -1,0 +1,12 @@
+<% content_for :title, "Editing vehicle" %>
+
+<h1>Editing vehicle</h1>
+
+<%= render "form", api_v1_vehicle: @api_v1_vehicle %>
+
+<br>
+
+<div>
+  <%= link_to "Show this vehicle", @api_v1_vehicle %> |
+  <%= link_to "Back to vehicles", api_v1_vehicles_path %>
+</div>

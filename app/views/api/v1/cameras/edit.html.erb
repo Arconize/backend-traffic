@@ -1,0 +1,12 @@
+<% content_for :title, "Editing camera" %>
+
+<h1>Editing camera</h1>
+
+<%= render "form", api_v1_camera: @api_v1_camera %>
+
+<br>
+
+<div>
+  <%= link_to "Show this camera", @api_v1_camera %> |
+  <%= link_to "Back to cameras", api_v1_cameras_path %>
+</div>

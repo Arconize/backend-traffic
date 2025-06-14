@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @api_v1_camera %>
+
+<div>
+  <%= link_to "Edit this camera", edit_api_v1_camera_path(@api_v1_camera) %> |
+  <%= link_to "Back to cameras", api_v1_cameras_path %>
+
+  <%= button_to "Destroy this camera", @api_v1_camera, method: :delete %>
+</div>

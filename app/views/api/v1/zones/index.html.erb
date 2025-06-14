@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Zones" %>
+
+<h1>Zones</h1>
+
+<div id="api_v1_zones">
+  <% @api_v1_zones.each do |api_v1_zone| %>
+    <%= render api_v1_zone %>
+    <p>
+      <%= link_to "Show this zone", api_v1_zone %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New zone", new_api_v1_zone_path %>

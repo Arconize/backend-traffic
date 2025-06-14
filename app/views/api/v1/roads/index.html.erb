@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Roads" %>
+
+<h1>Roads</h1>
+
+<div id="api_v1_roads">
+  <% @api_v1_roads.each do |api_v1_road| %>
+    <%= render api_v1_road %>
+    <p>
+      <%= link_to "Show this road", api_v1_road %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New road", new_api_v1_road_path %>

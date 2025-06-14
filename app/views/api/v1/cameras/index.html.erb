@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Cameras" %>
+
+<h1>Cameras</h1>
+
+<div id="api_v1_cameras">
+  <% @api_v1_cameras.each do |api_v1_camera| %>
+    <%= render api_v1_camera %>
+    <p>
+      <%= link_to "Show this camera", api_v1_camera %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New camera", new_api_v1_camera_path %>

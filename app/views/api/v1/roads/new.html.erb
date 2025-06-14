@@ -1,0 +1,11 @@
+<% content_for :title, "New road" %>
+
+<h1>New road</h1>
+
+<%= render "form", api_v1_road: @api_v1_road %>
+
+<br>
+
+<div>
+  <%= link_to "Back to roads", api_v1_roads_path %>
+</div>

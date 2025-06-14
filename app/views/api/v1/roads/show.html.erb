@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @api_v1_road %>
+
+<div>
+  <%= link_to "Edit this road", edit_api_v1_road_path(@api_v1_road) %> |
+  <%= link_to "Back to roads", api_v1_roads_path %>
+
+  <%= button_to "Destroy this road", @api_v1_road, method: :delete %>
+</div>
