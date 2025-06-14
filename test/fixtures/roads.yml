@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  road_type: one
+  zone: one
+  upgraded_at: 2025-06-14 12:57:45
+  deleted_at: 2025-06-14 12:57:45
+
+two:
+  road_type: two
+  zone: two
+  upgraded_at: 2025-06-14 12:57:45
+  deleted_at: 2025-06-14 12:57:45

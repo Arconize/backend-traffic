@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  land_name: MyString
+  def_max_speed: 1
+  def_min_speed: 1
+  description: MyText
+  upgraded_at: 2025-06-14 13:07:31
+  deleted_at: 2025-06-14 13:07:31
+
+two:
+  land_name: MyString
+  def_max_speed: 1
+  def_min_speed: 1
+  description: MyText
+  upgraded_at: 2025-06-14 13:07:31
+  deleted_at: 2025-06-14 13:07:31

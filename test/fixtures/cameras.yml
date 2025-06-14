@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  range: 1
+  road: one
+  status: MyString
+  camera_type: MyString
+  x_position: 1.5
+  y_position: 1.5
+  angle: 1.5
+  upgraded_at: 2025-06-14 13:03:42
+  deleted_at: 2025-06-14 13:03:42
+
+two:
+  range: 1
+  road: two
+  status: MyString
+  camera_type: MyString
+  x_position: 1.5
+  y_position: 1.5
+  angle: 1.5
+  upgraded_at: 2025-06-14 13:03:42
+  deleted_at: 2025-06-14 13:03:42

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  def_max_speed: 1
+  def_min_speed: 1
+  width_def: 1.5
+  line_count_def: 1
+  is_one_way_def: false
+  description: MyText
+  upgraded_at: 2025-06-14 12:57:36
+  deleted_at: 2025-06-14 12:57:36
+
+two:
+  def_max_speed: 1
+  def_min_speed: 1
+  width_def: 1.5
+  line_count_def: 1
+  is_one_way_def: false
+  description: MyText
+  upgraded_at: 2025-06-14 12:57:36
+  deleted_at: 2025-06-14 12:57:36

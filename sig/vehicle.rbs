@@ -1,0 +1,8 @@
+class Vehicle
+  private
+
+  def normalize_plate: -> void
+
+  def set_initial_timestamps: -> void
+
+end
