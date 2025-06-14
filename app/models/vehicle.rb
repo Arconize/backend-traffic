@@ -4,9 +4,9 @@ class Vehicle < ApplicationRecord
   has_many :cameras, through: :monitorings
 
   # Enums
-  enum :veh_type, { car: "car", motorcycle: "motorcycle", truck: "truck", bus: "bus", van: "van", emergency: "emergency" }, _prefix: :vehicle
-  enum :fuel_type, { petrol: "petrol", diesel: "diesel", electric: "electric", hybrid: "hybrid", gas: "gas" }, _prefix: :fuel
-  enum :pollution_lvl, { 'A+': "A+", 'A': "A", 'A-': "A-" }, _prefix: :pollution
+  enum :veh_type, { car: "car", motorcycle: "motorcycle", truck: "truck", bus: "bus", van: "van", emergency: "emergency" }, prefix: :vtype
+  enum :fuel_type, { petrol: "petrol", diesel: "diesel", electric: "electric", hybrid: "hybrid", gas: "gas" }, prefix: :fuel
+  enum :pollution_lvl, { 'A+': "A+", 'A': "A", 'A-': "A-" }, prefix: :pollution
 
   # Validations
   validates :veh_plate,
