@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_14_094546) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_14_210032) do
   create_table "cameras", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "range"
     t.bigint "road_id", null: false
-    t.string "status"
-    t.string "camera_type"
+    t.string "camera_status", limit: 20, null: false
+    t.string "camera_type", limit: 20, null: false
     t.float "x_position"
     t.float "y_position"
     t.float "angle"
@@ -61,7 +61,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_094546) do
 
   create_table "vehicles", primary_key: "veh_plate", id: { type: :string, limit: 8 }, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "veh_color", limit: 6, null: false
-    t.string "veh_type", limit: 6, null: false
+    t.string "veh_type", limit: 20, null: false
     t.date "veh_create_date", null: false
     t.string "veh_pollution_lvl", null: false
     t.string "veh_fuel_type", null: false

@@ -4,34 +4,66 @@ class Vehicle < ApplicationRecord
   has_many :cameras, through: :monitorings
 
   # Enums
-  enum :veh_type, { car: "car", motorcycle: "motorcycle", truck: "truck", bus: "bus", van: "van", emergency: "emergency" }, prefix: :vtype
-  enum :fuel_type, { petrol: "petrol", diesel: "diesel", electric: "electric", hybrid: "hybrid", gas: "gas" }, prefix: :fuel
-  enum :pollution_lvl, { 'A+': "A+", 'A': "A", 'A-': "A-" }, prefix: :pollution
+  enum :veh_type, {
+    car: "car",
+    motorcycle: "motorcycle",
+    truck: "truck",
+    bus: "bus",
+    van: "van",
+    emergency: "emergency"
+  }, prefix: :veh_type
+
+  enum :veh_fuel_type, {
+    petrol: "petrol",
+    diesel: "diesel",
+    electric: "electric",
+    hybrid: "hybrid",
+    gas: "gas"
+  }, prefix: :fuel_type
+
+  enum :veh_pollution_lvl, {
+    a_plus: "A+",
+    a_regular: "A",
+    a_minus: "A-"
+  }, prefix: :pollution
+
+  # # Constants
+  PLATE_FORMAT ||= /\A[A-Z0-9]{8}\z/
+  COLOR_FORMAT ||= /\A[a-zA-Z]+\z/
 
   # Validations
   validates :veh_plate,
             presence: true,
             length: { is: 8 },
-            format: { with: /\A[A-Z0-9]{8}\z/ },
+            format: { with: PLATE_FORMAT },
             uniqueness: { case_sensitive: false }
 
   validates :veh_color,
             presence: true,
             length: { maximum: 6 },
-            format: { with: /\A[a-zA-Z]+\z/ }
+            format: { with: COLOR_FORMAT }
 
-  validates :veh_create_date,
-            presence: true,
-            timeliness: { before: -> { Date.current }, type: :date }
+  # validates :veh_create_date,
+  #           presence: true,
+  #           timeliness: { before: -> { Date.current }, type: :date }
+
+  # Scopes
+  scope :by_type, ->(type) { where(veh_type: type) }
+  scope :recent, -> { where('veh_create_date >= ?', 1.year.ago) }
 
   # Callbacks
   before_validation :normalize_plate, if: :veh_plate_changed?
   before_create :set_initial_timestamps
 
+  # Instance Methods
+  def age
+    ((Date.current - veh_create_date) / 365).floor
+  end
+
   private
 
   def normalize_plate
-    self.veh_plate = veh_plate.upcase.gsub(/\s+/, "")
+    self.veh_plate = veh_plate.to_s.upcase.gsub(/\s+/, "")
   end
 
   def set_initial_timestamps

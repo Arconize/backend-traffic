@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "yaml_db"
 gem "mysql2"
 
+gem 'validates_timeliness'
 gem 'rswag'
 gem 'rswag-ui'
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
