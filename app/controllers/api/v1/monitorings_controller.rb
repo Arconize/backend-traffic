@@ -1,70 +1,93 @@
 class Api::V1::MonitoringsController < ApplicationController
-  before_action :set_api_v1_monitoring, only: %i[ show edit update destroy ]
+  before_action :set_monitoring, only: %i[show update destroy]
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  # GET /api/v1/monitorings or /api/v1/monitorings.json
+  # GET /api/v1/monitorings
   def index
-    @api_v1_monitorings = Api::V1::Monitoring.all
+    @monitorings = ::Monitoring.all
+    render json: @monitorings, status: :ok
   end
 
-  # GET /api/v1/monitorings/1 or /api/v1/monitorings/1.json
+  # GET /api/v1/monitorings/recent
+  def recent
+    @monitorings = ::Monitoring.where('time >= ?', 1.week.ago)
+    render json: @monitorings, status: :ok
+  end
+
+  # GET /api/v1/monitorings/by_vehicle/:vehicle_plate
+  def by_vehicle
+    @monitorings = ::Monitoring.where(veh_plate: params[:vehicle_plate])
+    render json: @monitorings, status: :ok
+  end
+
+  # GET /api/v1/monitorings/by_camera/:camera_id
+  def by_camera
+    @monitorings = ::Monitoring.where(camera_id: params[:camera_id])
+    render json: @monitorings, status: :ok
+  end
+
+  # GET /api/v1/monitorings/by_date/:date
+  def by_date
+    date = Date.parse(params[:date]) rescue nil
+    if date
+      @monitorings = ::Monitoring.where(time: date.beginning_of_day..date.end_of_day)
+      render json: @monitorings, status: :ok
+    else
+      render json: { error: "Invalid date format" }, status: :bad_request
+    end
+  end
+
+  # GET /api/v1/monitorings/:id
   def show
+    render json: @monitoring, status: :ok
   end
 
-  # GET /api/v1/monitorings/new
-  def new
-    @api_v1_monitoring = Api::V1::Monitoring.new
-  end
-
-  # GET /api/v1/monitorings/1/edit
-  def edit
-  end
-
-  # POST /api/v1/monitorings or /api/v1/monitorings.json
+  # POST /api/v1/monitorings
   def create
-    @api_v1_monitoring = Api::V1::Monitoring.new(api_v1_monitoring_params)
+    @monitoring = ::Monitoring.new(monitoring_params)
 
-    respond_to do |format|
-      if @api_v1_monitoring.save
-        format.html { redirect_to @api_v1_monitoring, notice: "Monitoring was successfully created." }
-        format.json { render :show, status: :created, location: @api_v1_monitoring }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @api_v1_monitoring.errors, status: :unprocessable_entity }
-      end
+    if @monitoring.save
+      render json: @monitoring, status: :created
+    else
+      render json: { errors: @monitoring.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/monitorings/1 or /api/v1/monitorings/1.json
+  # PATCH/PUT /api/v1/monitorings/:id
   def update
-    respond_to do |format|
-      if @api_v1_monitoring.update(api_v1_monitoring_params)
-        format.html { redirect_to @api_v1_monitoring, notice: "Monitoring was successfully updated." }
-        format.json { render :show, status: :ok, location: @api_v1_monitoring }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @api_v1_monitoring.errors, status: :unprocessable_entity }
-      end
+    if @monitoring.update(monitoring_params)
+      render json: @monitoring, status: :ok
+    else
+      render json: { errors: @monitoring.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/monitorings/1 or /api/v1/monitorings/1.json
+  # DELETE /api/v1/monitorings/:id
   def destroy
-    @api_v1_monitoring.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to api_v1_monitorings_path, status: :see_other, notice: "Monitoring was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    @monitoring.destroy
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_monitoring
-      @api_v1_monitoring = Api::V1::Monitoring.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def api_v1_monitoring_params
-      params.fetch(:api_v1_monitoring, {})
-    end
+  def set_monitoring
+    @monitoring = ::Monitoring.find_by!(
+      camera_id: params[:camera_id],
+      veh_plate: params[:veh_plate],
+      time: params[:time]
+    )
+  end
+
+  def monitoring_params
+    params.require(:monitoring).permit(
+      :camera_id,
+      :veh_plate,
+      :time,
+      :line
+    )
+  end
+
+  def not_found
+    render json: { error: "Monitoring record not found" }, status: :not_found
+  end
 end

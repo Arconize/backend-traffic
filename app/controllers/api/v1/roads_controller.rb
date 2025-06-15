@@ -1,70 +1,72 @@
 class Api::V1::RoadsController < ApplicationController
-  before_action :set_api_v1_road, only: %i[ show edit update destroy ]
+  before_action :set_road, only: %i[show update destroy traffic_data average_speed]
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  # GET /api/v1/roads or /api/v1/roads.json
+  # GET /api/v1/roads
   def index
-    @api_v1_roads = Api::V1::Road.all
+    @roads = ::Road.all
+    render json: @roads, status: :ok
   end
 
-  # GET /api/v1/roads/1 or /api/v1/roads/1.json
+  # GET /api/v1/roads/:id
   def show
+    render json: @road, status: :ok
   end
 
-  # GET /api/v1/roads/new
-  def new
-    @api_v1_road = Api::V1::Road.new
+  # GET /api/v1/roads/:id/traffic_data
+  def traffic_data
+    # منطق دریافت داده ترافیکی اینجا پیاده‌سازی می‌شود
+    render json: { traffic_data: "Sample data for road #{@road.id}" }, status: :ok
   end
 
-  # GET /api/v1/roads/1/edit
-  def edit
+  # GET /api/v1/roads/:id/average_speed
+  def average_speed
+    # منطق محاسبه میانگین سرعت اینجا پیاده‌سازی می‌شود
+    render json: { average_speed: "50 km/h" }, status: :ok
   end
 
-  # POST /api/v1/roads or /api/v1/roads.json
+  # POST /api/v1/roads
   def create
-    @api_v1_road = Api::V1::Road.new(api_v1_road_params)
+    @road = ::Road.new(road_params)
 
-    respond_to do |format|
-      if @api_v1_road.save
-        format.html { redirect_to @api_v1_road, notice: "Road was successfully created." }
-        format.json { render :show, status: :created, location: @api_v1_road }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @api_v1_road.errors, status: :unprocessable_entity }
-      end
+    if @road.save
+      render json: @road, status: :created
+    else
+      render json: { errors: @road.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/roads/1 or /api/v1/roads/1.json
+  # PATCH/PUT /api/v1/roads/:id
   def update
-    respond_to do |format|
-      if @api_v1_road.update(api_v1_road_params)
-        format.html { redirect_to @api_v1_road, notice: "Road was successfully updated." }
-        format.json { render :show, status: :ok, location: @api_v1_road }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @api_v1_road.errors, status: :unprocessable_entity }
-      end
+    if @road.update(road_params)
+      render json: @road, status: :ok
+    else
+      render json: { errors: @road.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/roads/1 or /api/v1/roads/1.json
+  # DELETE /api/v1/roads/:id
   def destroy
-    @api_v1_road.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to api_v1_roads_path, status: :see_other, notice: "Road was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    @road.destroy
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_road
-      @api_v1_road = Api::V1::Road.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def api_v1_road_params
-      params.fetch(:api_v1_road, {})
-    end
+  def set_road
+    @road = ::Road.find(params[:id])
+  end
+
+  def road_params
+    params.require(:road).permit(
+      :road_type_id,
+      :zone_id,
+      :upgraded_at,
+      :deleted_at
+    )
+  end
+
+  def not_found
+    render json: { error: "Road not found" }, status: :not_found
+  end
 end

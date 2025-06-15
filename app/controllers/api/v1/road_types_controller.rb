@@ -1,70 +1,62 @@
 class Api::V1::RoadTypesController < ApplicationController
-  before_action :set_api_v1_road_type, only: %i[ show edit update destroy ]
+  before_action :set_road_type, only: %i[show update destroy]
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  # GET /api/v1/road_types or /api/v1/road_types.json
+  # GET /api/v1/road_types
   def index
-    @api_v1_road_types = Api::V1::RoadType.all
+    @road_types = ::RoadType.all
+    render json: @road_types, status: :ok
   end
 
-  # GET /api/v1/road_types/1 or /api/v1/road_types/1.json
+  # GET /api/v1/road_types/:id
   def show
+    render json: @road_type, status: :ok
   end
 
-  # GET /api/v1/road_types/new
-  def new
-    @api_v1_road_type = Api::V1::RoadType.new
-  end
-
-  # GET /api/v1/road_types/1/edit
-  def edit
-  end
-
-  # POST /api/v1/road_types or /api/v1/road_types.json
+  # POST /api/v1/road_types
   def create
-    @api_v1_road_type = Api::V1::RoadType.new(api_v1_road_type_params)
+    @road_type = ::RoadType.new(road_type_params)
 
-    respond_to do |format|
-      if @api_v1_road_type.save
-        format.html { redirect_to @api_v1_road_type, notice: "Road type was successfully created." }
-        format.json { render :show, status: :created, location: @api_v1_road_type }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @api_v1_road_type.errors, status: :unprocessable_entity }
-      end
+    if @road_type.save
+      render json: @road_type, status: :created
+    else
+      render json: { errors: @road_type.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/road_types/1 or /api/v1/road_types/1.json
+  # PATCH/PUT /api/v1/road_types/:id
   def update
-    respond_to do |format|
-      if @api_v1_road_type.update(api_v1_road_type_params)
-        format.html { redirect_to @api_v1_road_type, notice: "Road type was successfully updated." }
-        format.json { render :show, status: :ok, location: @api_v1_road_type }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @api_v1_road_type.errors, status: :unprocessable_entity }
-      end
+    if @road_type.update(road_type_params)
+      render json: @road_type, status: :ok
+    else
+      render json: { errors: @road_type.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/road_types/1 or /api/v1/road_types/1.json
+  # DELETE /api/v1/road_types/:id
   def destroy
-    @api_v1_road_type.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to api_v1_road_types_path, status: :see_other, notice: "Road type was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    @road_type.destroy
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_road_type
-      @api_v1_road_type = Api::V1::RoadType.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def api_v1_road_type_params
-      params.fetch(:api_v1_road_type, {})
-    end
+  def set_road_type
+    @road_type = ::RoadType.find(params[:id])
+  end
+
+  def road_type_params
+    params.require(:road_type).permit(
+      :def_max_speed,
+      :def_min_speed,
+      :width_def,
+      :line_count_def,
+      :is_one_way_def,
+      :description
+    )
+  end
+
+  def not_found
+    render json: { error: "Road type not found" }, status: :not_found
+  end
 end

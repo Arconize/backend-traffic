@@ -1,70 +1,67 @@
 class Api::V1::ZonesController < ApplicationController
-  before_action :set_api_v1_zone, only: %i[ show edit update destroy ]
+  before_action :set_zone, only: %i[show update destroy traffic_patterns]
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  # GET /api/v1/zones or /api/v1/zones.json
+  # GET /api/v1/zones
   def index
-    @api_v1_zones = Api::V1::Zone.all
+    @zones = ::Zone.includes(:zone_type).all
+    render json: @zones, include: :zone_type, status: :ok
   end
 
-  # GET /api/v1/zones/1 or /api/v1/zones/1.json
+  # GET /api/v1/zones/:id
   def show
+    render json: @zone, include: :zone_type, status: :ok
   end
 
-  # GET /api/v1/zones/new
-  def new
-    @api_v1_zone = Api::V1::Zone.new
+  # GET /api/v1/zones/:id/traffic_patterns
+  def traffic_patterns
+    render json: {
+      patterns: "Traffic patterns for zone #{@zone.id}",
+      peak_hours: ["08:00-10:00", "17:00-19:00"]
+    }, status: :ok
   end
 
-  # GET /api/v1/zones/1/edit
-  def edit
-  end
-
-  # POST /api/v1/zones or /api/v1/zones.json
+  # POST /api/v1/zones
   def create
-    @api_v1_zone = Api::V1::Zone.new(api_v1_zone_params)
+    @zone = ::Zone.new(zone_params)
 
-    respond_to do |format|
-      if @api_v1_zone.save
-        format.html { redirect_to @api_v1_zone, notice: "Zone was successfully created." }
-        format.json { render :show, status: :created, location: @api_v1_zone }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @api_v1_zone.errors, status: :unprocessable_entity }
-      end
+    if @zone.save
+      render json: @zone, status: :created
+    else
+      render json: { errors: @zone.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/zones/1 or /api/v1/zones/1.json
+  # PATCH/PUT /api/v1/zones/:id
   def update
-    respond_to do |format|
-      if @api_v1_zone.update(api_v1_zone_params)
-        format.html { redirect_to @api_v1_zone, notice: "Zone was successfully updated." }
-        format.json { render :show, status: :ok, location: @api_v1_zone }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @api_v1_zone.errors, status: :unprocessable_entity }
-      end
+    if @zone.update(zone_params)
+      render json: @zone, status: :ok
+    else
+      render json: { errors: @zone.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/zones/1 or /api/v1/zones/1.json
+  # DELETE /api/v1/zones/:id
   def destroy
-    @api_v1_zone.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to api_v1_zones_path, status: :see_other, notice: "Zone was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    @zone.destroy
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_zone
-      @api_v1_zone = Api::V1::Zone.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def api_v1_zone_params
-      params.fetch(:api_v1_zone, {})
-    end
+  def set_zone
+    @zone = ::Zone.find(params[:id])
+  end
+
+  def zone_params
+    params.require(:zone).permit(
+      :zone_type_id,
+      :upgraded_at,
+      :deleted_at
+    )
+  end
+
+  def not_found
+    render json: { error: "Zone not found" }, status: :not_found
+  end
 end

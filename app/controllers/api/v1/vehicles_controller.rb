@@ -1,70 +1,70 @@
 class Api::V1::VehiclesController < ApplicationController
-  before_action :set_api_v1_vehicle, only: %i[ show edit update destroy ]
+  before_action :set_vehicle, only: %i[show update destroy]
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  # GET /api/v1/vehicles or /api/v1/vehicles.json
+  # GET /api/v1/vehicles
   def index
-    @api_v1_vehicles = Api::V1::Vehicle.all
+    @vehicles = ::Vehicle.all
+    render json: @vehicles, status: :ok
   end
 
-  # GET /api/v1/vehicles/1 or /api/v1/vehicles/1.json
+  # GET /api/v1/vehicles/:id
   def show
+    render json: @vehicle, status: :ok
   end
 
-  # GET /api/v1/vehicles/new
-  def new
-    @api_v1_vehicle = Api::V1::Vehicle.new
-  end
-
-  # GET /api/v1/vehicles/1/edit
-  def edit
-  end
-
-  # POST /api/v1/vehicles or /api/v1/vehicles.json
+  # POST /api/v1/vehicles
   def create
-    @api_v1_vehicle = Api::V1::Vehicle.new(api_v1_vehicle_params)
+    @vehicle = ::Vehicle.new(vehicle_params)
 
-    respond_to do |format|
-      if @api_v1_vehicle.save
-        format.html { redirect_to @api_v1_vehicle, notice: "Vehicle was successfully created." }
-        format.json { render :show, status: :created, location: @api_v1_vehicle }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @api_v1_vehicle.errors, status: :unprocessable_entity }
-      end
+    if @vehicle.save
+      render json: @vehicle, status: :created
+    else
+      render json: { errors: @vehicle.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/vehicles/1 or /api/v1/vehicles/1.json
+  # PATCH/PUT /api/v1/vehicles/:id
   def update
-    respond_to do |format|
-      if @api_v1_vehicle.update(api_v1_vehicle_params)
-        format.html { redirect_to @api_v1_vehicle, notice: "Vehicle was successfully updated." }
-        format.json { render :show, status: :ok, location: @api_v1_vehicle }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @api_v1_vehicle.errors, status: :unprocessable_entity }
-      end
+    if @vehicle.update(vehicle_params)
+      render json: @vehicle, status: :ok
+    else
+      render json: { errors: @vehicle.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/vehicles/1 or /api/v1/vehicles/1.json
+  # DELETE /api/v1/vehicles/:id
   def destroy
-    @api_v1_vehicle.destroy!
+    @vehicle.destroy
+    head :no_content
+  end
 
-    respond_to do |format|
-      format.html { redirect_to api_v1_vehicles_path, status: :see_other, notice: "Vehicle was successfully destroyed." }
-      format.json { head :no_content }
-    end
+  # GET /api/v1/vehicles/by_plate/:plate
+  def by_plate
+    @vehicle = ::Vehicle.find_by!(veh_plate: params[:plate])
+    render json: @vehicle, status: :ok
+  rescue ActiveRecord::RecordNotFound
+    not_found
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_vehicle
-      @api_v1_vehicle = Api::V1::Vehicle.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def api_v1_vehicle_params
-      params.fetch(:api_v1_vehicle, {})
-    end
+  def set_vehicle
+    @vehicle = ::Vehicle.find_by!(veh_plate: params[:id])
+  end
+
+  def vehicle_params
+    params.require(:vehicle).permit(
+      :veh_plate,
+      :veh_type,
+      :veh_color,
+      :veh_create_date,
+      :veh_pollution_lvl,
+      :veh_fuel_type
+    )
+  end
+
+  def not_found
+    render json: { error: "Vehicle not found" }, status: :not_found
+  end
 end
