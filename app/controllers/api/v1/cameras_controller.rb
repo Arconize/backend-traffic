@@ -1,70 +1,96 @@
 class Api::V1::CamerasController < ApplicationController
-  before_action :set_api_v1_camera, only: %i[ show edit update destroy ]
+  before_action :set_camera, only: %i[show update destroy toggle_status calibrate]
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
-  # GET /api/v1/cameras or /api/v1/cameras.json
+  # GET /api/v1/cameras
   def index
-    @api_v1_cameras = Api::V1::Camera.all
+    @cameras = ::Camera.all
+    render json: @cameras, status: :ok
   end
 
-  # GET /api/v1/cameras/1 or /api/v1/cameras/1.json
+  # GET /api/v1/cameras/active
+  def active
+    @cameras = ::Camera.where(status: 'active')
+    render json: @cameras, status: :ok
+  end
+
+  # GET /api/v1/cameras/:id
   def show
+    render json: @camera, status: :ok
   end
 
-  # GET /api/v1/cameras/new
-  def new
-    @api_v1_camera = Api::V1::Camera.new
-  end
-
-  # GET /api/v1/cameras/1/edit
-  def edit
-  end
-
-  # POST /api/v1/cameras or /api/v1/cameras.json
+  # POST /api/v1/cameras
   def create
-    @api_v1_camera = Api::V1::Camera.new(api_v1_camera_params)
+    @camera = ::Camera.new(camera_params)
 
-    respond_to do |format|
-      if @api_v1_camera.save
-        format.html { redirect_to @api_v1_camera, notice: "Camera was successfully created." }
-        format.json { render :show, status: :created, location: @api_v1_camera }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @api_v1_camera.errors, status: :unprocessable_entity }
-      end
+    if @camera.save
+      render json: @camera, status: :created
+    else
+      render json: { errors: @camera.errors }, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /api/v1/cameras/1 or /api/v1/cameras/1.json
+  # PATCH/PUT /api/v1/cameras/:id
   def update
-    respond_to do |format|
-      if @api_v1_camera.update(api_v1_camera_params)
-        format.html { redirect_to @api_v1_camera, notice: "Camera was successfully updated." }
-        format.json { render :show, status: :ok, location: @api_v1_camera }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @api_v1_camera.errors, status: :unprocessable_entity }
-      end
+    if @camera.update(camera_params)
+      render json: @camera, status: :ok
+    else
+      render json: { errors: @camera.errors }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/cameras/1 or /api/v1/cameras/1.json
-  def destroy
-    @api_v1_camera.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to api_v1_cameras_path, status: :see_other, notice: "Camera was successfully destroyed." }
-      format.json { head :no_content }
+  # PATCH /api/v1/cameras/:id/toggle_status
+  def toggle_status
+    new_status = @camera.active? ? 'inactive' : 'active'
+    if @camera.update(status: new_status)
+      render json: @camera, status: :ok
+    else
+      render json: { errors: @camera.errors }, status: :unprocessable_entity
     end
+  end
+
+  # POST /api/v1/cameras/:id/calibrate
+  def calibrate
+    # منطق کالیبراسیون اینجا پیاده‌سازی می‌شود
+    render json: { message: "Calibration started for camera #{@camera.id}" }, status: :accepted
+  end
+
+  # DELETE /api/v1/cameras/:id
+  def destroy
+    @camera.destroy
+    head :no_content
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_camera
-      @api_v1_camera = Api::V1::Camera.find(params.expect(:id))
+
+  def set_camera
+    @camera = ::Camera.find(params[:id])
+  end
+
+  def search
+    filters = params.slice(:camera_id, :status, :x_position , :y_position , :angle)
+    cameras = ::Camera.all
+
+    filters.each do |key, value|
+      next if value.blank?
+      cameras = cameras.where("#{key} LIKE ?", "%#{value}%")
     end
 
-    # Only allow a list of trusted parameters through.
-    def api_v1_camera_params
-      params.fetch(:api_v1_camera, {})
-    end
+    render json: cameras, status: :ok
+  end
+  def camera_params
+    params.require(:camera).permit(
+      :range,
+      :road_id,
+      :status,
+      :camera_type,
+      :x_position,
+      :y_position,
+      :angle
+    )
+  end
+
+  def not_found
+    render json: { error: "Camera not found" }, status: :not_found
+  end
 end

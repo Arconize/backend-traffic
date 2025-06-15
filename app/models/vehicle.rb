@@ -14,7 +14,6 @@ class Vehicle < ApplicationRecord
   }, prefix: :veh_type
 
   enum :veh_fuel_type, {
-    petrol: "petrol",
     diesel: "diesel",
     electric: "electric",
     hybrid: "hybrid",

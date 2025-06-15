@@ -26,7 +26,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_210032) do
     t.index ["road_id"], name: "index_cameras_on_road_id"
   end
 
-  create_table "monitors", primary_key: ["camera_id", "veh_plate", "time"], charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "monitorings", primary_key: ["camera_id", "veh_plate", "time"], charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "camera_id", null: false
     t.string "veh_plate", limit: 8, null: false
     t.datetime "time", null: false
@@ -92,8 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_14_210032) do
   end
 
   add_foreign_key "cameras", "roads"
-  add_foreign_key "monitors", "cameras"
-  add_foreign_key "monitors", "vehicles", column: "veh_plate", primary_key: "veh_plate"
+  add_foreign_key "monitorings", "cameras"
+  add_foreign_key "monitorings", "vehicles", column: "veh_plate", primary_key: "veh_plate"
   add_foreign_key "roads", "road_types"
   add_foreign_key "roads", "zones"
   add_foreign_key "zones", "zone_types"

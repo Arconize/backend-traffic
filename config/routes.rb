@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       # Vehicles
-      resources :vehicles, except: [:new, :edit] do
+      resources :vehicles, param: :veh_plate, except: [:new, :edit] do
         collection do
           get :search
           get :stats
@@ -23,6 +23,8 @@ Rails.application.routes.draw do
         end
       end
 
+      # Zone_Types
+      resources :zone_types, except: [:new, :edit]
       # Zones
       resources :zones, except: [:new, :edit] do
         resources :roads, only: [:index]
@@ -31,6 +33,8 @@ Rails.application.routes.draw do
         end
       end
 
+      # Road type
+      resources :road_types, except: [:new, :edit]
       # Roads
       resources :roads, except: [:new, :edit] do
         resources :cameras, only: [:index, :create]
@@ -41,7 +45,7 @@ Rails.application.routes.draw do
       end
 
       # Monitorings
-      resources :monitorings, only: [:index, :show, :create] do
+      resources :monitorings, only: [:index, :show, :create, :update, :destroy] do
         collection do
           get :recent
           get 'by_vehicle/:vehicle_plate', to: 'monitorings#by_vehicle'

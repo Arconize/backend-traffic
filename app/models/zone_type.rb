@@ -1,5 +1,4 @@
 class ZoneType < ApplicationRecord
-  self.primary_key = :zone_type_id
 
   has_many :zones, foreign_key: :zone_type_id
 
