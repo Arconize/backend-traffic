@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   # API Versioning
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+
       # Vehicles
       resources :vehicles, param: :veh_plate, except: [:new, :edit] do
         collection do
