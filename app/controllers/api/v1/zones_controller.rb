@@ -21,6 +21,26 @@ class Api::V1::ZonesController < ApplicationController
     }, status: :ok
   end
 
+  # GET /api/v1/zones/search
+  def search
+    zones = ::Zone.all
+
+    # Apply filters by the date fields if present.
+    filters = params.slice(:created_at, :updated_at, :deleted_at)
+    filters.each do |key, value|
+      next if value.blank?
+      zones = zones.where(key => value)
+    end
+
+    # Filter by land_name from the associated zone_type table.
+    if params[:land_name].present?
+      zones = zones.joins(:zone_type)
+                   .where("zone_types.land_name LIKE ?", "%#{params[:land_name]}%")
+    end
+
+    render json: zones, status: :ok
+  end
+
   # POST /api/v1/zones
   def create
     @zone = ::Zone.new(zone_params)

@@ -26,8 +26,12 @@ Rails.application.routes.draw do
 
       # Zone_Types
       resources :zone_types, except: [:new, :edit]
+
       # Zones
       resources :zones, except: [:new, :edit] do
+        collection do
+          get :search  # This defines a clear route for zones#search
+        end
         resources :roads, only: [:index]
         member do
           get :traffic_patterns
@@ -36,6 +40,7 @@ Rails.application.routes.draw do
 
       # Road type
       resources :road_types, except: [:new, :edit]
+
       # Roads
       resources :roads, except: [:new, :edit] do
         resources :cameras, only: [:index, :create]
