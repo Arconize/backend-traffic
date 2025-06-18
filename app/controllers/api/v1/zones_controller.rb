@@ -73,24 +73,24 @@ class Api::V1::ZonesController < ApplicationController
     @zone = ::Zone.find(params[:id])
   end
 
-  def search
-    filters = params.slice(:name, :zone_type, :description)
-    zones = ::Zone.all
-
-    filters.each do |key, value|
-      next if value.blank?
-      zones = zones.where("#{key} LIKE ?", "%#{value}%")
-    end
-
-    render json: zones, status: :ok
-  end
-  def zone_params
-    params.require(:zone).permit(
-      :zone_type_id,
-      :upgraded_at,
-      :deleted_at
-    )
-  end
+  # def search
+  #   filters = params.slice(:name, :zone_type, :description)
+  #   zones = ::Zone.all
+  #
+  #   filters.each do |key, value|
+  #     next if value.blank?
+  #     zones = zones.where("#{key} LIKE ?", "%#{value}%")
+  #   end
+  #
+  #   render json: zones, status: :ok
+  # end
+  # def zone_params
+  #   params.require(:zone).permit(
+  #     :zone_type_id,
+  #     :upgraded_at,
+  #     :deleted_at
+  #   )
+  # end
 
   def not_found
     render json: { error: "Zone not found" }, status: :not_found

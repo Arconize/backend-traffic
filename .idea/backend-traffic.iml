@@ -2655,6 +2655,36 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="rack-cors (v3.0.0) [path][gem]" type="rubylib">
+        <properties>
+          <option name="additionalInfo">
+            <AdditionalInfo>
+              <option name="authors" value="N/A" />
+              <option name="email" value="N/A" />
+              <option name="homepage" value="N/A" />
+              <option name="summary" value="N/A" />
+            </AdditionalInfo>
+          </option>
+          <option name="fromPath" value="true" />
+          <option name="name" value="rack-cors" />
+          <option name="requirePaths">
+            <list>
+              <option value="lib" />
+            </list>
+          </option>
+          <option name="url" value="file://$USER_HOME$/.gem/ruby/3.4.0/gems/rack-cors-3.0.0" />
+          <option name="version" value="3.0.0" />
+        </properties>
+        <CLASSES>
+          <root url="file://$USER_HOME$/.gem/ruby/3.4.0/gems/rack-cors-3.0.0/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/.gem/ruby/3.4.0/gems/rack-cors-3.0.0/lib" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="rack-session (v2.1.1) [path][gem]" type="rubylib">
         <properties>
           <option name="additionalInfo">

@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "yaml_db"
 gem "mysql2"
 
+gem 'rack-cors'
 gem 'validates_timeliness'
 gem 'rswag'
 gem 'rswag-ui'
